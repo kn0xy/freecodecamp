@@ -24,7 +24,7 @@ app.get("/api/hello", function (req, res) {
 });
 
 // Satisfy all FCC tests
-app.get(new RegExp("\/api\/(.*)"), function(req, res) {
+app.get(new RegExp("\/api\/?(.*)"), function(req, res) {
   const ogPath = req.originalUrl;
   const apiVal = ogPath.substring(5, ogPath.length);
   const date = (apiVal ? (apiVal.match(/[^\d]/) ? new Date(apiVal) : new Date(parseInt(apiVal))) : new Date());
