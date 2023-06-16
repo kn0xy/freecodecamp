@@ -24,17 +24,28 @@ app.get("/api/hello", function (req, res) {
 });
 
 // Satisfy all FCC tests
+function getResponse(dateObj) {
+  return {
+    unix: dateObj.getTime(), 
+    utc: dateObj.toUTCString()
+  }
+}
 app.get(new RegExp("\/api\/?(.*)"), function(req, res) {
   const ogPath = req.originalUrl;
   const apiVal = ogPath.substring(5, ogPath.length);
-  const date = (apiVal ? (apiVal.match(/[^\d]/) ? new Date(apiVal) : new Date(parseInt(apiVal))) : new Date());
-  const utcStr = date.toUTCString();
-  if(apiVal && utcStr === "Invalid Date") {
-    res.json({error: "Invalid Date"});
-  } else {
-    const ms = date.getTime();
-    res.json({unix: ms, utc: utcStr});
+  let date = (apiVal ? (apiVal.match(/[^\d]/) ? new Date(apiVal) : new Date(parseInt(apiVal))) : new Date());
+  let response = getResponse(date);
+  if(apiVal && response.utc === "Invalid Date") {
+    // try decode url
+    date = new Date(decodeURIComponent(apiVal));
+    utcStr = date.toUTCString();
+    response = getResponse(date);
+    if(response.utc === 'Invalid Date') {
+      response = {error: response.utc}
+    }
   }
+  res.json(response);
+  console.log('Request:  '+apiVal);
 });
 
 
